@@ -1984,8 +1984,9 @@ end
 -- @arg {*...} values
 function Subject:onNext(...)
   if not self.stopped then
-    for i = 1, #self.observers do
-      self.observers[i]:onNext(...)
+    local observers = {util.unpack(self.observers)}
+    for i = 1, #observers do
+      observers[i]:onNext(...)
     end
   end
 end
@@ -1994,8 +1995,9 @@ end
 -- @arg {string=} message - A string describing what went wrong.
 function Subject:onError(message)
   if not self.stopped then
-    for i = 1, #self.observers do
-      self.observers[i]:onError(message)
+    local observers = {util.unpack(self.observers)}
+    for i = 1, #observers do
+      observers[i]:onError(message)
     end
 
     self.stopped = true
@@ -2005,8 +2007,9 @@ end
 --- Signal to all Observers that the Subject will not produce any more values.
 function Subject:onCompleted()
   if not self.stopped then
-    for i = 1, #self.observers do
-      self.observers[i]:onCompleted()
+    local observers = {util.unpack(self.observers)}
+    for i = 1, #observers do
+      observers[i]:onCompleted()
     end
 
     self.stopped = true
