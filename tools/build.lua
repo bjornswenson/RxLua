@@ -4,7 +4,7 @@
 
 local files = {
   'src/util.lua',
-  'src/subscription.lua',
+  'src/subscriptions/subscription.lua',
   'src/observer.lua',
   'src/observable.lua',
   'src/operators/all.lua',
