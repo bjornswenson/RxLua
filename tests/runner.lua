@@ -68,6 +68,7 @@ else
     'observer',
     'observable',
     'subscription',
+    'compositesubscription',
     'subject',
     'asyncsubject',
     'behaviorsubject',
