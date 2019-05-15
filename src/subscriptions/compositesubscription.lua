@@ -1,14 +1,14 @@
 local util = require 'util'
 
 --- @class CompositeSubscription
--- @description A composed set of subscriptions that enables convenient subscription management
--- and easy unsubscribing.
+-- @description A Subscription that is composed of other subscriptions and can be used to
+-- unsubscribe multiple subscriptions at once.
 local CompositeSubscription = {}
 CompositeSubscription.__index = CompositeSubscription
 CompositeSubscription.__tostring = util.constant('CompositeSubscription')
 
---- Creates a new CompositeSubscription.
--- @arg {Subscriptions...} subscriptions - A set of subscriptions to initialize the object with.
+--- Creates a new CompositeSubscription. It may be initialized empty or with a set of Subscriptions.
+-- @arg {Subscription...} subscriptions - A set of subscriptions to initialize the object with.
 -- @returns {CompositeSubscription}
 function CompositeSubscription.create(...)
   local self = {
@@ -18,7 +18,8 @@ function CompositeSubscription.create(...)
   return setmetatable(self, CompositeSubscription)
 end
 
---- Adds the given Subscriptions to this object.
+--- Adds one or more Subscriptions to this CompositeSubscription.
+-- @arg {Subscription...} subscriptions - The list of Subscriptions to add.
 -- @returns {nil}
 function CompositeSubscription:add(...)
   for _,subscription in ipairs({...}) do
@@ -26,7 +27,8 @@ function CompositeSubscription:add(...)
   end
 end
 
---- Unsubscribes all registered subscriptions and removes them from this CompositeSubscription.
+--- Unsubscribes all subscriptions that were added to this CompositeSubscription and removes them
+-- from this CompositeSubscription.
 -- @returns {nil}
 function CompositeSubscription:unsubscribe()
   for _,subscription in ipairs(self.subscriptions) do
