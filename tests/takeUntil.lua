@@ -43,4 +43,21 @@ describe('takeUntil', function()
     subject:onCompleted()
     expect(onNext).to.equal({})
   end)
+
+  it('unsubscribes when it completes', function ()
+    local trigger = Rx.Subject.create()
+    local unsub = spy()
+
+    local source = Rx.Observable.create(function (observer)
+      return Rx.Subscription.create(unsub)
+    end)
+
+    source
+      :takeUntil(trigger)
+      :subscribe(Rx.Observer.create())
+    expect(#unsub).to.equal(0)
+
+    trigger()
+    expect(#unsub).to.equal(1)
+  end)
 end)

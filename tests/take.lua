@@ -32,4 +32,23 @@ describe('take', function()
     expect(#onError).to.equal(0)
     expect(#onCompleted).to.equal(1)
   end)
+
+  it('unsubscribes when it completes', function ()
+    local keepGoing = true
+    local unsub = spy()
+    local observer
+
+    local source = Rx.Observable.create(function (_observer)
+      observer = _observer
+      return Rx.Subscription.create(unsub)
+    end)
+
+    source
+      :take(1)
+      :subscribe(Rx.Observer.create())
+    expect(#unsub).to.equal(0)
+
+    observer:onNext()
+    expect(#unsub).to.equal(1)
+  end)
 end)

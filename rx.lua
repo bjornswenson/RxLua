@@ -1538,6 +1538,23 @@ function Observable:take(n)
     end
 
     local i = 1
+    local subscription
+
+    local function unsub()
+      if subscription then
+        subscription:unsubscribe()
+      end
+    end
+
+    local function onCompleted()
+      observer:onCompleted()
+      unsub()
+    end
+
+    local function onError(e)
+      observer:onError(e)
+      unsub()
+    end
 
     local function onNext(...)
       observer:onNext(...)
@@ -1545,19 +1562,12 @@ function Observable:take(n)
       i = i + 1
 
       if i > n then
-        observer:onCompleted()
+        onCompleted()
       end
     end
 
-    local function onError(e)
-      return observer:onError(e)
-    end
-
-    local function onCompleted()
-      return observer:onCompleted()
-    end
-
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return Subscription.create(unsub)
   end)
 end
 
@@ -1572,6 +1582,13 @@ function Observable:takeLast(count)
 
   return Observable.create(function(observer)
     local buffer = {}
+    local subscription
+
+    local function unsub()
+      if subscription then
+        subscription:unsubscribe()
+      end
+    end
 
     local function onNext(...)
       table.insert(buffer, util.pack(...))
@@ -1581,17 +1598,20 @@ function Observable:takeLast(count)
     end
 
     local function onError(message)
-      return observer:onError(message)
+      observer:onError(message)
+      unsub()
     end
 
     local function onCompleted()
       for i = 1, #buffer do
         observer:onNext(util.unpack(buffer[i]))
       end
-      return observer:onCompleted()
+      observer:onCompleted()
+      unsub()
     end
 
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return Subscription.create(unsub)
   end)
 end
 
@@ -1600,21 +1620,32 @@ end
 -- @returns {Observable}
 function Observable:takeUntil(other)
   return Observable.create(function(observer)
+    local subscription
+
+    local function unsub()
+      if subscription then
+        subscription:unsubscribe()
+      end
+    end
+
     local function onNext(...)
       return observer:onNext(...)
     end
 
     local function onError(e)
-      return observer:onError(e)
+      observer:onError(e)
+      unsub()
     end
 
     local function onCompleted()
-      return observer:onCompleted()
+      observer:onCompleted()
+      unsub()
     end
 
     other:subscribe(onCompleted, onCompleted, onCompleted)
 
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return Subscription.create(unsub)
   end)
 end
 
@@ -1626,6 +1657,23 @@ function Observable:takeWhile(predicate)
 
   return Observable.create(function(observer)
     local taking = true
+    local subscription
+
+    local function unsub()
+      if subscription then
+        subscription:unsubscribe()
+      end
+    end
+
+    local function onError(message)
+      observer:onError(message)
+      unsub()
+    end
+
+    local function onCompleted()
+      observer:onCompleted()
+      unsub()
+    end
 
     local function onNext(...)
       if taking then
@@ -1636,20 +1684,13 @@ function Observable:takeWhile(predicate)
         if taking then
           return observer:onNext(...)
         else
-          return observer:onCompleted()
+          return onCompleted()
         end
       end
     end
 
-    local function onError(message)
-      return observer:onError(message)
-    end
-
-    local function onCompleted()
-      return observer:onCompleted()
-    end
-
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return Subscription.create(unsub)
   end)
 end
 
