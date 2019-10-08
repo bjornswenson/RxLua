@@ -2,21 +2,48 @@ language: python
 sudo: required
 dist: trusty
 
+# Using cache to pass artifacts between stages
+# See: https://github.com/travis-ci/docs-travis-ci-com/issues/1329
+cache:
+  directories:
+    - ~/cache
+
+stages:
+- test
+- name: "Build portable releases"
+  if: tag IS present
+- name: "Test portable releases"
+  if: tag IS present
+- name: release
+  if: tag IS present
+
 env:
-  - LUA="lua 5.1"
-  - LUA="lua 5.2"
-  - LUA="lua 5.3"
-  - LUA="luajit 2.0"
-  - LUA="luajit 2.1"
+  global:
+    - RXLUA_VERSION=$(echo -n ${TRAVIS_TAG} | sed 's/[^0-9.]//gi')
+    - CACHE_NAME=$TRAVIS_BUILD_ID
+  matrix:
+    - LUA="lua 5.1"
+    - LUA="lua 5.2"
+    - LUA="lua 5.3"
+    - LUA="luajit 2.0"
+    - LUA="luajit 2.1"
 
 before_install:
   - pip install hererocks
-  - hererocks here -r^ --$LUA
-  - source here/bin/activate
+  - hererocks .hererocks -r^ --$LUA
+  - source .hererocks/bin/activate
 
 install:
   - luarocks make
   - luarocks install luacov-coveralls
+  - luarocks show rxlua
+  - luarocks show luacov-coveralls
+
+after_install:
+  - echo $CACHE_NAME
+  - echo $TRAVIS_BUILD_ID
+  - echo $TRAVIS_TAG
+  - echo $RXLUA_VERSION
 
 script:
   - lua -v
@@ -24,3 +51,104 @@ script:
 
 after_success:
   - luacov-coveralls
+
+jobs:
+  include:
+  - stage: "Build portable releases"
+    env: 
+    before_install:
+      - pip install hererocks
+      - hererocks .hererocks -r^ --lua 5.1
+      - source .hererocks/bin/activate
+    install: 
+      - luarocks make
+      - luarocks show rxlua
+      - rm -rf ~/cache/*
+      - echo $TRAVIS_BUILD_ID > ~/cache/travis_build_id
+      - lua -v 
+      - lua tools/build.lua
+      - cp README.md LICENSE .tmp/rxlua-portable
+      - cp README.md LICENSE .tmp/rxlua-portable-luvit
+      - cd .tmp/rxlua-portable
+      - zip ~/cache/rxlua-portable.zip *
+      - cd ../rxlua-portable-luvit
+      - zip ~/cache/rxlua-portable-luvit.zip *
+    script:
+      - ls ~/cache
+      - echo $CACHE_NAME
+
+  # Since there are custom stages, the build matrix defined above for the 
+  # test stage doesn't apply here anymore. Using YAML aliases to define 
+  # test jobs here for all Lua versions without config duplication.
+  # See: https://docs.travis-ci.com/user/build-stages/using-yaml-aliases/
+  # 
+  # Also... can't use `env:` here to specify Lua version, before_install
+  # must be repated. This is because Travis cache is not shared between 
+  # jobs with different env set.
+  - &test-portable-releases
+    stage: "Test portable releases"
+    env: 
+    before_install:
+      - pip install hererocks
+      - hererocks .hererocks -r^ --lua 5.1
+      - source .hererocks/bin/activate
+    install: 
+      - if test "$TRAVIS_BUILD_ID" != $(cat ~/cache/travis_build_id); then travis_terminate 1; fi
+      - lua -v
+      - mkdir .tmp
+      - cd .tmp 
+      - mkdir test-portable test-portable-luvit
+      - cp -r ../tests test-portable
+      - cp -r ../tests test-portable-luvit    
+      - cp ~/cache/rxlua-portable.zip test-portable
+      - cp ~/cache/rxlua-portable-luvit.zip test-portable-luvit
+      - cd test-portable
+      - unzip rxlua-portable.zip
+      - lua tests/runner.lua
+      - cd ../test-portable-luvit
+      - unzip rxlua-portable-luvit.zip
+      # emulate luvit environment with global `exports` table
+      - echo 'exports = {} dofile("tests/runner.lua")' | lua -
+    script:
+      - true
+  - <<: *test-portable-releases
+    before_install:
+      - pip install hererocks
+      - hererocks .hererocks -r^ --lua 5.2
+      - source .hererocks/bin/activate
+  - <<: *test-portable-releases
+    before_install:
+      - pip install hererocks
+      - hererocks .hererocks -r^ --lua 5.3
+      - source .hererocks/bin/activate
+  - <<: *test-portable-releases
+    before_install:
+      - pip install hererocks
+      - hererocks .hererocks -r^ --luajit 2.0
+      - source .hererocks/bin/activate
+  - <<: *test-portable-releases
+    before_install:
+      - pip install hererocks
+      - hererocks .hererocks -r^ --luajit 2.1
+      - source .hererocks/bin/activate
+  - stage: release
+    env:
+    install: 
+      - if test "$TRAVIS_BUILD_ID" != $(cat ~/cache/travis_build_id); then travis_terminate 1; fi
+      - cp ~/cache/rxlua-portable.zip .
+      - cp ~/cache/rxlua-portable-luvit.zip .
+      - mv ~/cache ~/cache-discard
+      - mkdir ~/cache # clear the cache
+    script:
+      - true
+    deploy: &releases
+      provider: releases
+      api_key:
+        secure: YOUR_ENCRYPTED_API_KEY_HERE
+      file:
+      - rxlua-portable.zip
+      - rxlua-portable-luvit.zip
+      skip_cleanup: true
+      on:
+        repo: YOUR_USERNAME_HERE/RxLua
+        tags: true
