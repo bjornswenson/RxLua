@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns an Observable that intercepts any errors from the previous and replace them with values
 -- produced by a new Observable.

@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns a new Observable that produces the values of the first with falsy values removed.
 -- @returns {Observable}

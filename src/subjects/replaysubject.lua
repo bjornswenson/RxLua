@@ -1,6 +1,6 @@
-local Subject = require 'subjects/subject'
-local Observer = require 'observer'
-local util = require 'util'
+local Subject = require 'rx.subjects/subject'
+local Observer = require 'rx.observer'
+local util = require 'rx.util'
 
 --- @class ReplaySubject
 -- @description A Subject that provides new Subscribers with some or all of the most recently

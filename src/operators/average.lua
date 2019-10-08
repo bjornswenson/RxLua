@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns an Observable that produces the average of all values produced by the original.
 -- @returns {Observable}

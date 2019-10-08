@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns an Observable that produces a single value representing the number of values produced
 -- by the source value that satisfy an optional predicate.

@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns an Observable that unpacks the tables produced by the original.
 -- @returns {Observable}

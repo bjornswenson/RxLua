@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Determine whether all items emitted by an Observable meet some criteria.
 -- @arg {function=identity} predicate - The predicate used to evaluate objects.

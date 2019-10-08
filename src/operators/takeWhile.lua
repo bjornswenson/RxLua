@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns a new Observable that produces elements until the predicate returns falsy.
 -- @arg {function} predicate - The predicate used to continue production of values.

@@ -1,4 +1,5 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
 
 --- Given a set of Observables, produces values from only the first one to produce a value.
 -- @arg {Observable...} observables

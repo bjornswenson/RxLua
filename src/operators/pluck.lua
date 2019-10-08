@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns a new Observable that produces values computed by extracting the given keys from the
 -- tables produced by the original.

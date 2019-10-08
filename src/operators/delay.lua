@@ -1,6 +1,6 @@
-local Observable = require 'Observable'
-local Subscription = require 'Subscription'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- Returns a new Observable that produces the values of the original delayed by a time period.
 -- @arg {number|function} time - An amount in milliseconds to delay by, or a function which returns

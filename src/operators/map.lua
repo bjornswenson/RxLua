@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns a new Observable that produces the values of the original transformed by a function.
 -- @arg {function} callback - The function to transform values from the original Observable.

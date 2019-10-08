@@ -1,6 +1,6 @@
-local Subject = require 'subjects/subject'
-local Observer = require 'observer'
-local util = require 'util'
+local Subject = require 'rx.subjects/subject'
+local Observer = require 'rx.observer'
+local util = require 'rx.util'
 
 --- @class BehaviorSubject
 -- @description A Subject that tracks its current value. Provides an accessor to retrieve the most

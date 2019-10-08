@@ -1,6 +1,6 @@
-local Observable = require 'observable'
-local Subscription = require 'subscription'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- Returns a new throttled Observable that waits to produce values until a timeout has expired, at
 -- which point it produces the latest value from the source Observable.  Whenever the source

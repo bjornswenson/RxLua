@@ -1,5 +1,6 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- Returns a new Observable that produces its most recent value every time the specified observable
 -- produces a value.

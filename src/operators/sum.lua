@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns an Observable that produces a single value representing the sum of the values produced
 -- by the original.

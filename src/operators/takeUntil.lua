@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns a new Observable that completes when the specified Observable fires.
 -- @arg {Observable} other - The Observable that triggers completion of the original.

@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns an Observable that takes any values produced by the original that consist of multiple
 -- return values and produces each value individually.

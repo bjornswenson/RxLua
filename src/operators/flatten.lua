@@ -1,5 +1,6 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- Returns a new Observable that subscribes to the Observables produced by the original and
 -- produces their values.

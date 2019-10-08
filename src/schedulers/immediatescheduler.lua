@@ -1,4 +1,4 @@
-local util = require 'util'
+local util = require 'rx.util'
 
 --- @class ImmediateScheduler
 -- @description Schedules Observables by running all operations immediately.

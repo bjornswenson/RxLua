@@ -1,6 +1,6 @@
-local Observable = require 'observable'
-local Subscription = require 'subscription'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- Returns a new Observable that uses a callback to create Observables from the values produced by
 -- the source, then produces values from the most recent of these Observables.

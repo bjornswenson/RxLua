@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns two Observables: one that produces values for which the predicate returns truthy for,
 -- and another that produces values for which the predicate returns falsy.

@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Runs a function each time this Observable has activity. Similar to subscribe but does not
 -- create a subscription.

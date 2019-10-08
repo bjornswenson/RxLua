@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns a new Observable that skips elements until the predicate returns falsy for one of them.
 -- @arg {function} predicate - The predicate used to continue skipping values.

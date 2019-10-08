@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns a new Observable that only produces the first n results of the original.
 -- @arg {number=1} n - The number of elements to produce before completing.

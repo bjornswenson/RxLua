@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns an Observable that terminates when the source terminates but does not produce any
 -- elements.

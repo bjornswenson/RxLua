@@ -1,7 +1,7 @@
-local Observable = require 'observable'
-local Observer = require 'observer'
-local Subscription = require 'subscription'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Observer = require 'rx.observer'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- @class AsyncSubject
 -- @description AsyncSubjects are subjects that produce either no values or a single value.  If

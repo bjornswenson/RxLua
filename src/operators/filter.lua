@@ -1,5 +1,5 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local util = require 'rx.util'
 
 --- Returns a new Observable that only produces values of the first that satisfy a predicate.
 -- @arg {function} predicate - The predicate used to filter values.

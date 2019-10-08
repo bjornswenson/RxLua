@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns a new Observable that produces the minimum value produced by the original.
 -- @returns {Observable}

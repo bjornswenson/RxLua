@@ -1,4 +1,4 @@
-local util = require 'util'
+local util = require 'rx.util'
 
 --- @class Observer
 -- @description Observers are simple objects that receive values from Observables.

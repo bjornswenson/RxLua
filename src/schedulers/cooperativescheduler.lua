@@ -1,5 +1,5 @@
-local util = require 'util'
-local Subscription = require 'subscription'
+local util = require 'rx.util'
+local Subscription = require 'rx.subscription'
 
 --- @class CooperativeScheduler
 -- @description Manages Observables using coroutines and a virtual clock that must be updated

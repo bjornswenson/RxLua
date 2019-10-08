@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns a new Observable that skips over a specified number of values produced by the original
 -- and produces the rest.

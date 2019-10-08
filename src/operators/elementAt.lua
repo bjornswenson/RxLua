@@ -1,4 +1,4 @@
-local Observable = require 'observable'
+local Observable = require 'rx.observable'
 
 --- Returns an Observable that produces the nth element produced by the source Observable.
 -- @arg {number} index - The index of the item, with an index of 1 representing the first.

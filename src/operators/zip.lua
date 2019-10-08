@@ -1,5 +1,6 @@
-local Observable = require 'observable'
-local util = require 'util'
+local Observable = require 'rx.observable'
+local Subscription = require 'rx.subscription'
+local util = require 'rx.util'
 
 --- Returns an Observable that merges the values produced by the source Observables by grouping them
 -- by their index.  The first onNext event contains the first value of all of the sources, the
