@@ -1,0 +1,92 @@
+package = "rxlua"
+version = "scm-3"
+
+source = { url = "git://github.com/bjornbytes/RxLua.git" }
+
+description =
+{
+  summary = "Reactive Extensions for Lua",
+  homepage = "https://github.com/bjornbytes/RxLua/tree/master",
+  license = "MIT/X11",
+  maintainer = "tie.372@gmail.com",
+  detailed = [[
+RxLua gives Lua the power of Observables, which are data structures that represent a stream of values that arrive over time. They're very handy when dealing with events, streams of data, asynchronous requests, and concurrency.
+]]
+}
+
+build =
+{
+  type = "builtin",
+  modules = { 
+    rx = "src/init.lua",
+    ["rx.operators.partition"] = "src/operators/partition.lua",
+    ["rx.operators.last"] = "src/operators/last.lua",
+    ["rx.operators.pack"] = "src/operators/pack.lua",
+    ["rx.operators.skipUntil"] = "src/operators/skipUntil.lua",
+    ["rx.operators.find"] = "src/operators/find.lua",
+    ["rx.init"] = "src/init.lua",
+    ["rx.operators.takeLast"] = "src/operators/takeLast.lua",
+    ["rx.operators.compact"] = "src/operators/compact.lua",
+    ["rx.operators.zip"] = "src/operators/zip.lua",
+    ["rx.operators.buffer"] = "src/operators/buffer.lua",
+    ["rx.operators.tap"] = "src/operators/tap.lua",
+    ["rx.util"] = "src/util.lua",
+    ["rx.operators.sum"] = "src/operators/sum.lua",
+    ["rx.operators.with"] = "src/operators/with.lua",
+    ["rx.operators.delay"] = "src/operators/delay.lua",
+    ["rx.operators.merge"] = "src/operators/merge.lua",
+    ["rx.schedulers.timeoutscheduler"] = "src/schedulers/timeoutscheduler.lua",
+    ["rx.operators.switch"] = "src/operators/switch.lua",
+    ["rx.operators.take"] = "src/operators/take.lua",
+    ["rx.operators.scan"] = "src/operators/scan.lua",
+    ["rx.operators.all"] = "src/operators/all.lua",
+    ["rx.operators.unwrap"] = "src/operators/unwrap.lua",
+    ["rx.operators.flatMapLatest"] = "src/operators/flatMapLatest.lua",
+    ["rx.operators.count"] = "src/operators/count.lua",
+    ["rx.subjects.behaviorsubject"] = "src/subjects/behaviorsubject.lua",
+    ["rx.operators.combineLatest"] = "src/operators/combineLatest.lua",
+    ["rx.operators.unpack"] = "src/operators/unpack.lua",
+    ["rx.operators.max"] = "src/operators/max.lua",
+    ["rx.operators.takeWhile"] = "src/operators/takeWhile.lua",
+    ["rx.operators.skipWhile"] = "src/operators/skipWhile.lua",
+    ["rx.operators.flatMap"] = "src/operators/flatMap.lua",
+    ["rx.observer"] = "src/observer.lua",
+    ["rx.operators.min"] = "src/operators/min.lua",
+    ["rx.operators.startWith"] = "src/operators/startWith.lua",
+    ["rx.operators.flatten"] = "src/operators/flatten.lua",
+    ["rx.operators.skipLast"] = "src/operators/skipLast.lua",
+    ["rx.operators.skip"] = "src/operators/skip.lua",
+    ["rx.operators.ignoreElements"] = "src/operators/ignoreElements.lua",
+    ["rx.operators.contains"] = "src/operators/contains.lua",
+    ["rx.subjects.replaysubject"] = "src/subjects/replaysubject.lua",
+    ["rx.operators.takeUntil"] = "src/operators/takeUntil.lua",
+    ["rx.operators.concat"] = "src/operators/concat.lua",
+    ["rx.operators.window"] = "src/operators/window.lua",
+    ["rx.operators.first"] = "src/operators/first.lua",
+    ["rx.schedulers.cooperativescheduler"] = "src/schedulers/cooperativescheduler.lua",
+    ["rx.operators.reject"] = "src/operators/reject.lua",
+    ["rx.operators.amb"] = "src/operators/amb.lua",
+    ["rx.subjects.asyncsubject"] = "src/subjects/asyncsubject.lua",
+    ["rx.operators.reduce"] = "src/operators/reduce.lua",
+    ["rx.operators.init"] = "src/operators/init.lua",
+    ["rx.aliases"] = "src/aliases.lua",
+    ["rx.operators.debounce"] = "src/operators/debounce.lua",
+    ["rx.operators.elementAt"] = "src/operators/elementAt.lua",
+    ["rx.operators.catch"] = "src/operators/catch.lua",
+    ["rx.operators.defaultIfEmpty"] = "src/operators/defaultIfEmpty.lua",
+    ["rx.operators.pluck"] = "src/operators/pluck.lua",
+    ["rx.observable"] = "src/observable.lua",
+    ["rx.operators.retry"] = "src/operators/retry.lua",
+    ["rx.operators.filter"] = "src/operators/filter.lua",
+    ["rx.schedulers.immediatescheduler"] = "src/schedulers/immediatescheduler.lua",
+    ["rx.subjects/subject"] = "src/subjects/subject.lua",
+    ["rx.operators.map"] = "src/operators/map.lua",
+    ["rx.operators.distinctUntilChanged"] = "src/operators/distinctUntilChanged.lua",
+    ["rx.subjects.subject"] = "src/subjects/subject.lua",
+    ["rx.operators.sample"] = "src/operators/sample.lua",
+    ["rx.subscription"] = "src/subscription.lua",
+    ["rx.operators.average"] = "src/operators/average.lua",
+    ["rx.operators.distinct"] = "src/operators/distinct.lua",
+  },
+  copy_directories = { "doc", "tests" }
+}
