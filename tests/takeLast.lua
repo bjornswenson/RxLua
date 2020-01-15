@@ -25,4 +25,22 @@ describe('takeLast', function()
   it('produces no elements if the source Observable produces no elements', function()
     expect(Rx.Observable.empty():takeLast(1)).to.produce.nothing()
   end)
+
+  it('unsubscribes when it completes', function ()
+    local unsub = spy()
+    local observer
+
+    local source = Rx.Observable.create(function (_observer)
+      observer = _observer
+      return Rx.Subscription.create(unsub)
+    end)
+
+    source
+      :takeLast(1)
+      :subscribe(Rx.Observer.create())
+    expect(#unsub).to.equal(0)
+
+    observer:onCompleted()
+    expect(#unsub).to.equal(1)
+  end)
 end)

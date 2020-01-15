@@ -25,4 +25,27 @@ describe('takeWhile', function()
   it('calls onError if the predicate errors', function()
     expect(Rx.Observable.fromRange(3):takeWhile(error)).to.produce.error()
   end)
+
+  it('unsubscribes when it completes', function ()
+    local keepGoing = true
+    local unsub = spy()
+    local observer
+
+    local source = Rx.Observable.create(function (_observer)
+      observer = _observer
+      return Rx.Subscription.create(unsub)
+    end)
+
+    source
+      :takeWhile(function () return keepGoing end)
+      :subscribe(Rx.Observer.create())
+    expect(#unsub).to.equal(0)
+
+    observer:onNext()
+    expect(#unsub).to.equal(0)
+
+    keepGoing = false
+    observer:onNext()
+    expect(#unsub).to.equal(1)
+  end)
 end)
