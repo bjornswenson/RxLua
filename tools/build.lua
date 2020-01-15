@@ -64,6 +64,7 @@ local files = {
   'src/schedulers/cooperativescheduler.lua',
   'src/schedulers/timeoutscheduler.lua',
   'src/subjects/subject.lua',
+  'src/subjects/anonymoussubject.lua',
   'src/subjects/asyncsubject.lua',
   'src/subjects/behaviorsubject.lua',
   'src/subjects/replaysubject.lua',
@@ -96,6 +97,7 @@ local footer = [[return {
   CooperativeScheduler = CooperativeScheduler,
   TimeoutScheduler = TimeoutScheduler,
   Subject = Subject,
+  AnonymousSubject = AnonymousSubject,
   AsyncSubject = AsyncSubject,
   BehaviorSubject = BehaviorSubject,
   ReplaySubject = ReplaySubject

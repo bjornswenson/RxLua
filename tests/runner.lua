@@ -90,6 +90,7 @@ else
     'observable',
     'subscription',
     'subject',
+    'anonymoussubject',
     'asyncsubject',
     'behaviorsubject',
     'replaysubject'

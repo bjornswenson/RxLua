@@ -17,16 +17,21 @@ function Observable.create(subscribe)
   return setmetatable(self, Observable)
 end
 
---- Shorthand for creating an Observer and passing it to this Observable's subscription function.
--- @arg {function} onNext - Called when the Observable produces a value.
+--- Attaches an Observer to this Observable and returns a corresponding Subscription.
+-- @arg {Observer|function} onNext - An Observer, or a function which is called when the Observable
+--   produces a value.  If a function, then the three-argument semantics are used, which are a
+--   shorthand for creating an Observer and passing it to this same method.
 -- @arg {function} onError - Called when the Observable terminates due to an error.
 -- @arg {function} onCompleted - Called when the Observable completes normally.
+-- @returns {Subscription}
 function Observable:subscribe(onNext, onError, onCompleted)
+  local s
   if type(onNext) == 'table' then
-    return self._subscribe(onNext)
+    s = self._subscribe(onNext)
   else
-    return self._subscribe(Observer.create(onNext, onError, onCompleted))
+    s = self._subscribe(Observer.create(onNext, onError, onCompleted))
   end
+  return s or Subscription.create(util.noop)
 end
 
 --- Returns an Observable that immediately completes without producing a value.
