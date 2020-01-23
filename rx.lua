@@ -283,9 +283,13 @@ end
 -- @arg {function=tostring} formatter - A function that formats one or more values to be printed.
 function Observable:dump(name, formatter)
   name = name and (name .. ' ') or ''
-  formatter = formatter or tostring
 
-  local onNext = function(...) print(name .. 'onNext: ' .. formatter(...)) end
+  local onNext
+  if formatter then
+    onNext = function(...) print(name .. 'onNext: ' .. formatter(...)) end
+  else
+    onNext = function(...) print(name .. 'onNext: ', ...) end
+  end
   local onError = function(e) print(name .. 'onError: ' .. e) end
   local onCompleted = function() print(name .. 'onCompleted') end
 
