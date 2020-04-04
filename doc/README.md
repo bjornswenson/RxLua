@@ -3,6 +3,7 @@ RxLua
 
 - [Subscription](#subscription)
   - [create](#createaction)
+  - [empty](#empty)
   - [unsubscribe](#unsubscribe)
 - [Observer](#observer)
   - [create](#createonnext-onerror-oncompleted)
@@ -122,6 +123,12 @@ Creates a new Subscription.
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `action` | function (optional) |  | The action to run when the subscription is unsubscribed. It will only be run once. |
+
+---
+
+#### `.empty()`
+
+Creates a new Subscription that is already unsubscribed.
 
 ---
 

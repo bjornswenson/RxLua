@@ -41,6 +41,17 @@ function Subscription.create(action)
   return setmetatable(self, Subscription)
 end
 
+--- Creates a new Subscription that is already unsubscribed.
+-- @returns {@Subscription}
+function Subscription.empty()
+  local self = {
+    action = util.noop,
+    unsubscribed = true,
+  }
+
+  return setmetatable(self, Subscription)
+end
+
 --- Unsubscribes the subscription, performing any necessary cleanup work.
 function Subscription:unsubscribe()
   if self.unsubscribed then return end

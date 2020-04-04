@@ -6,6 +6,13 @@ describe('Subscription', function()
     end)
   end)
 
+  describe('empty', function()
+    it('returns a Subscription', function()
+      local subscription = Rx.Subscription.empty()
+      expect(subscription).to.be.an(Rx.Subscription)
+    end)
+  end)
+
   describe('unsubscribe', function()
     it('runs the function passed to create', function()
       local unsubscribe = spy()
