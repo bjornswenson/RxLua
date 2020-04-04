@@ -2010,7 +2010,9 @@ end
 --- @class Subject
 -- @description Subjects function both as an Observer and as an Observable. Subjects inherit all
 -- Observable functions, including subscribe. Values can also be pushed to the Subject, which will
--- be broadcasted to any subscribed Observers.
+-- be broadcasted to any subscribed Observers. If an observer subscribes after this Subject has
+-- already completed or terminated in an error, the observer receives the onComplete() or onError()
+-- event immediately and the subscription is cancelled.
 local Subject = setmetatable({}, Observable)
 Subject.__index = Subject
 Subject.__tostring = util.constant('Subject')
@@ -2020,7 +2022,8 @@ Subject.__tostring = util.constant('Subject')
 function Subject.create()
   local self = {
     observers = {},
-    stopped = false
+    stopped = false,
+    errorMessage = nil
   }
 
   return setmetatable(self, Subject)
@@ -2038,6 +2041,15 @@ function Subject:subscribe(onNext, onError, onCompleted)
     observer = onNext
   else
     observer = Observer.create(onNext, onError, onCompleted)
+  end
+
+  if self.stopped then
+    if self.errorMessage then
+      observer:onError(self.errorMessage)
+    else
+      observer:onCompleted()
+    end
+    return Subscription.empty()
   end
 
   table.insert(self.observers, observer)
@@ -2066,22 +2078,23 @@ end
 -- @arg {string=} message - A string describing what went wrong.
 function Subject:onError(message)
   if not self.stopped then
+    self.stopped = true
+    self.errorMessage = message
+
     for i = #self.observers, 1, -1 do
       self.observers[i]:onError(message)
     end
-
-    self.stopped = true
   end
 end
 
 --- Signal to all Observers that the Subject will not produce any more values.
 function Subject:onCompleted()
   if not self.stopped then
+    self.stopped = true
+
     for i = #self.observers, 1, -1 do
       self.observers[i]:onCompleted()
     end
-
-    self.stopped = true
   end
 end
 
@@ -2127,10 +2140,10 @@ function AsyncSubject:subscribe(onNext, onError, onCompleted)
   if self.value then
     observer:onNext(util.unpack(self.value))
     observer:onCompleted()
-    return
+    return Subscription.empty()
   elseif self.errorMessage then
     observer:onError(self.errorMessage)
-    return
+    return Subscription.empty()
   end
 
   table.insert(self.observers, observer)
@@ -2221,20 +2234,35 @@ function BehaviorSubject:subscribe(onNext, onError, onCompleted)
     observer = Observer.create(onNext, onError, onCompleted)
   end
 
-  local subscription = Subject.subscribe(self, observer)
-
-  if self.value then
+  if not self.stopped and self.value then
     observer:onNext(util.unpack(self.value))
   end
 
-  return subscription
+  return Subject.subscribe(self, observer)
 end
 
 --- Pushes zero or more values to the BehaviorSubject. They will be broadcasted to all Observers.
 -- @arg {*...} values
 function BehaviorSubject:onNext(...)
-  self.value = util.pack(...)
+  if not self.stopped then
+    self.value = util.pack(...)
+  end
   return Subject.onNext(self, ...)
+end
+
+--- Pushes an error message to all Observers and terminates the subject. Clears the current value
+-- causing `getValue()` to return `nil`.
+-- @arg {string} message
+function BehaviorSubject:onError(message)
+  self.value = nil
+  return Subject.onError(self, message)
+end
+
+--- Completes the subject and terminates its event stream. Clears the current value, causing
+-- `getValue()` to return `nil`.
+function BehaviorSubject:onCompleted()
+  self.value = nil
+  return Subject.onCompleted(self)
 end
 
 --- Returns the last value emitted by the BehaviorSubject, or the initial value passed to the
@@ -2284,13 +2312,11 @@ function ReplaySubject:subscribe(onNext, onError, onCompleted)
     observer = Observer.create(onNext, onError, onCompleted)
   end
 
-  local subscription = Subject.subscribe(self, observer)
-
   for i = 1, #self.buffer do
     observer:onNext(util.unpack(self.buffer[i]))
   end
 
-  return subscription
+  return Subject.subscribe(self, observer)
 end
 
 --- Pushes zero or more values to the ReplaySubject. They will be broadcasted to all Observers.

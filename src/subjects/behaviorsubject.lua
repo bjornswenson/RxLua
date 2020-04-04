@@ -39,20 +39,35 @@ function BehaviorSubject:subscribe(onNext, onError, onCompleted)
     observer = Observer.create(onNext, onError, onCompleted)
   end
 
-  local subscription = Subject.subscribe(self, observer)
-
-  if self.value then
+  if not self.stopped and self.value then
     observer:onNext(util.unpack(self.value))
   end
 
-  return subscription
+  return Subject.subscribe(self, observer)
 end
 
 --- Pushes zero or more values to the BehaviorSubject. They will be broadcasted to all Observers.
 -- @arg {*...} values
 function BehaviorSubject:onNext(...)
-  self.value = util.pack(...)
+  if not self.stopped then
+    self.value = util.pack(...)
+  end
   return Subject.onNext(self, ...)
+end
+
+--- Pushes an error message to all Observers and terminates the subject. Clears the current value
+-- causing `getValue()` to return `nil`.
+-- @arg {string} message
+function BehaviorSubject:onError(message)
+  self.value = nil
+  return Subject.onError(self, message)
+end
+
+--- Completes the subject and terminates its event stream. Clears the current value, causing
+-- `getValue()` to return `nil`.
+function BehaviorSubject:onCompleted()
+  self.value = nil
+  return Subject.onCompleted(self)
 end
 
 --- Returns the last value emitted by the BehaviorSubject, or the initial value passed to the

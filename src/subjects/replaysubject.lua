@@ -38,13 +38,11 @@ function ReplaySubject:subscribe(onNext, onError, onCompleted)
     observer = Observer.create(onNext, onError, onCompleted)
   end
 
-  local subscription = Subject.subscribe(self, observer)
-
   for i = 1, #self.buffer do
     observer:onNext(util.unpack(self.buffer[i]))
   end
 
-  return subscription
+  return Subject.subscribe(self, observer)
 end
 
 --- Pushes zero or more values to the ReplaySubject. They will be broadcasted to all Observers.

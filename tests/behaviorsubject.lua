@@ -72,6 +72,66 @@ describe('BehaviorSubject', function()
       subject:onNext(4, 5, 6)
       expect({subject:getValue()}).to.equal({4, 5, 6})
     end)
+
+    describe('if the subject has previously received an error', function()
+      it('does not push values to subscribers', function()
+        local observers = {}
+        local spies = {}
+        for i = 1, 2 do
+          observers[i] = Rx.Observer.create(nil, function() end, nil)
+          spies[i] = spy(observers[i], '_onNext')
+        end
+
+        local subject = Rx.BehaviorSubject.create()
+        subject:subscribe(observers[1])
+        subject:subscribe(observers[2])
+        subject:onError('ohno')
+        subject:onNext(1)
+        subject:onNext(2)
+        subject:onNext(3)
+        expect(#spies[1]).to.equal(0)
+        expect(#spies[2]).to.equal(0)
+      end)
+
+      it('does not set the current value', function()
+        local subject = Rx.BehaviorSubject.create()
+        subject:onError('ohno')
+        subject:onNext(1, 2, 3)
+        expect(subject:getValue()).to_not.exist()
+        subject:onNext(4, 5, 6)
+        expect(subject:getValue()).to_not.exist()
+      end)
+    end)
+
+    describe('if the subject has already completed', function()
+      it('does not push values to subscribers', function()
+        local observers = {}
+        local spies = {}
+        for i = 1, 2 do
+          observers[i] = Rx.Observer.create()
+          spies[i] = spy(observers[i], '_onNext')
+        end
+
+        local subject = Rx.BehaviorSubject.create()
+        subject:subscribe(observers[1])
+        subject:subscribe(observers[2])
+        subject:onCompleted()
+        subject:onNext(1)
+        subject:onNext(2)
+        subject:onNext(3)
+        expect(#spies[1]).to.equal(0)
+        expect(#spies[2]).to.equal(0)
+      end)
+
+      it('does not set the current value', function()
+        local subject = Rx.BehaviorSubject.create()
+        subject:onCompleted()
+        subject:onNext(1, 2, 3)
+        expect(subject:getValue()).to_not.exist()
+        subject:onNext(4, 5, 6)
+        expect(subject:getValue()).to_not.exist()
+      end)
+    end)
   end)
 
   describe('onError', function()
@@ -90,6 +150,31 @@ describe('BehaviorSubject', function()
       expect(spies[1]).to.equal({{'ohno'}})
       expect(spies[2]).to.equal({{'ohno'}})
     end)
+
+    it('clears the current value', function()
+      local subject = Rx.BehaviorSubject.create(1, 2, 3)
+      subject:onError('ohno')
+      expect(subject:getValue()).to_not.exist()
+    end)
+
+    describe('if the subject has already completed', function()
+      it('does not push errors to subscribers', function()
+        local observers = {}
+        local spies = {}
+        for i = 1, 2 do
+          observers[i] = Rx.Observer.create(nil, function() end, nil)
+          spies[i] = spy(observers[i], '_onError')
+        end
+
+        local subject = Rx.BehaviorSubject.create()
+        subject:subscribe(observers[1])
+        subject:subscribe(observers[2])
+        subject:onCompleted()
+        subject:onError('ohno')
+        expect(#spies[1]).to.equal(0)
+        expect(#spies[2]).to.equal(0)
+      end)
+    end)
   end)
 
   describe('onCompleted', function()
@@ -107,6 +192,31 @@ describe('BehaviorSubject', function()
       subject:onCompleted()
       expect(#spies[1]).to.equal(1)
       expect(#spies[2]).to.equal(1)
+    end)
+
+    it('clears the current value', function()
+      local subject = Rx.BehaviorSubject.create(1, 2, 3)
+      subject:onCompleted()
+      expect(subject:getValue()).to_not.exist()
+    end)
+
+    describe('if the subject has previously received an error', function()
+      it('does not notify subscribers of completion', function()
+        local observers = {}
+        local spies = {}
+        for i = 1, 2 do
+          observers[i] = Rx.Observer.create(nil, function() end, nil)
+          spies[i] = spy(observers[i], '_onCompleted')
+        end
+
+        local subject = Rx.BehaviorSubject.create()
+        subject:subscribe(observers[1])
+        subject:subscribe(observers[2])
+        subject:onError()
+        subject:onCompleted()
+        expect(#spies[1]).to.equal(0)
+        expect(#spies[2]).to.equal(0)
+      end)
     end)
   end)
 end)

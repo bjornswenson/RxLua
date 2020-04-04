@@ -104,6 +104,8 @@ RxLua
   - [create](#createvalue)
   - [subscribe](#subscribeonnext-onerror-oncompleted)
   - [onNext](#onnextvalues)
+  - [onError](#onerrormessage)
+  - [onCompleted](#oncompleted)
   - [getValue](#getvalue)
 - [ReplaySubject](#replaysubject)
   - [create](#createbuffersize)
@@ -873,7 +875,7 @@ Schedules an action to run at a future point in time.
 
 # Subject
 
-Subjects function both as an Observer and as an Observable. Subjects inherit all Observable functions, including subscribe. Values can also be pushed to the Subject, which will be broadcasted to any subscribed Observers.
+Subjects function both as an Observer and as an Observable. Subjects inherit all Observable functions, including subscribe. Values can also be pushed to the Subject, which will be broadcasted to any subscribed Observers. If an observer subscribes after this Subject has already completed or terminated in an error, the observer receives the onComplete() or onError() event immediately and the subscription is cancelled.
 
 ---
 
@@ -1002,6 +1004,22 @@ Pushes zero or more values to the BehaviorSubject. They will be broadcasted to a
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `values` | *... |  |  |
+
+---
+
+#### `:onError(message)`
+
+Pushes an error message to all Observers and terminates the subject. Clears the current value causing `getValue()` to return `nil`.
+
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `message` | string |  |  |
+
+---
+
+#### `:onCompleted()`
+
+Completes the subject and terminates its event stream. Clears the current value, causing `getValue()` to return `nil`.
 
 ---
 
