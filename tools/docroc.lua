@@ -6,7 +6,7 @@ local docroc = {}
 
 function docroc.process(filename)
   local file = io.open(filename, 'r')
-  local text = file:read('*a')
+  local text = file:read('*a'):gsub('\r', '')
   file:close()
 
   local comments = {}
