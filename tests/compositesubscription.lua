@@ -18,7 +18,8 @@ describe('CompositeSubscription', function()
           spy(subscriptions[2], 'unsubscribe'),
         }
 
-        local compositeSubscription = Rx.CompositeSubscription.create(unpack(subscriptions))
+        local compositeSubscription = Rx.CompositeSubscription.create(
+            subscriptions[1], subscriptions[2])
         compositeSubscription:unsubscribe()
 
         expect(#spies[1]).to.equal(1)
@@ -35,7 +36,7 @@ describe('CompositeSubscription', function()
           spy(subscriptions[2], 'unsubscribe'),
         }
 
-        local compositeSubscription = Rx.CompositeSubscription.create(unpack(subscriptions))
+        local compositeSubscription = Rx.CompositeSubscription.create(subscriptions[1], subscriptions[2])
         compositeSubscription:unsubscribe()
         compositeSubscription:unsubscribe()
 
@@ -56,7 +57,7 @@ describe('CompositeSubscription', function()
         }
 
         local compositeSubscription = Rx.CompositeSubscription.create()
-        compositeSubscription:add(unpack(subscriptions))
+        compositeSubscription:add(subscriptions[1], subscriptions[2])
         compositeSubscription:unsubscribe()
 
         expect(#spies[1]).to.equal(1)
@@ -74,7 +75,7 @@ describe('CompositeSubscription', function()
         }
 
         local compositeSubscription = Rx.CompositeSubscription.create()
-        compositeSubscription:add(unpack(subscriptions))
+        compositeSubscription:add(subscriptions[1], subscriptions[2])
         compositeSubscription:unsubscribe()
         compositeSubscription:unsubscribe()
 
@@ -96,7 +97,7 @@ describe('CompositeSubscription', function()
       }
 
       local compositeSubscription = Rx.CompositeSubscription.create()
-      compositeSubscription:add(unpack(subscriptions))
+      compositeSubscription:add(subscriptions[1], subscriptions[2])
 
       expect(#spies[1]).to.equal(0)
       expect(#spies[2]).to.equal(0)
@@ -116,7 +117,7 @@ describe('CompositeSubscription', function()
         local compositeSubscription = Rx.CompositeSubscription.create()
         compositeSubscription:unsubscribe()
 
-        compositeSubscription:add(unpack(subscriptions))
+        compositeSubscription:add(subscriptions[1], subscriptions[2])
 
         expect(#spies[1]).to.equal(1)
         expect(#spies[2]).to.equal(1)
@@ -138,7 +139,7 @@ describe('CompositeSubscription', function()
             Rx.Subscription.create(function() end))
         compositeSubscription:clear()
 
-        compositeSubscription:add(unpack(subscriptions))
+        compositeSubscription:add(subscriptions[1], subscriptions[2])
 
         expect(#spies[1]).to.equal(0)
         expect(#spies[2]).to.equal(0)
@@ -157,7 +158,7 @@ describe('CompositeSubscription', function()
           spy(subscriptions[2], 'unsubscribe'),
         }
 
-        local compositeSubscription = Rx.CompositeSubscription.create(unpack(subscriptions))
+        local compositeSubscription = Rx.CompositeSubscription.create(subscriptions[1], subscriptions[2])
         compositeSubscription:clear()
 
         expect(#spies[1]).to.equal(1)

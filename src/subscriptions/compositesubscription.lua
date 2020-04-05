@@ -13,7 +13,7 @@ CompositeSubscription.__tostring = util.constant('CompositeSubscription')
 -- @returns {CompositeSubscription}
 function CompositeSubscription.create(...)
   local self = {
-    subscriptions = {...},
+    subscriptions = util.pack(...),
     unsubscribed = false,
   }
 
@@ -38,7 +38,7 @@ end
 -- @arg {Subscription...} subscriptions - The list of Subscriptions to add.
 -- @returns {nil}
 function CompositeSubscription:add(...)
-  for _,subscription in ipairs({...}) do
+  for _,subscription in ipairs(util.pack(...)) do
     if not self.unsubscribed then
       table.insert(self.subscriptions, subscription)
     else
