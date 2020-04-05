@@ -1,9 +1,3 @@
-subscriptionSpy = function()
-  local subscription = Rx.Subscription.create(function() end)
-  local unsubscribe = spy(subscription, 'unsubscribe')
-  return subscription, unsubscribe
-end
-
 describe('CompositeSubscription', function()
   describe('create', function()
     it('returns a CompositeSubscription', function()
@@ -13,58 +7,161 @@ describe('CompositeSubscription', function()
   end)
 
   describe('unsubscribe', function()
-    it('unsubscribes all subscriptions it was created with', function()
-      local subscription1, unsubscribe1 = subscriptionSpy()
-      local subscription2, unsubscribe2 = subscriptionSpy()
-      local compositeSubscription = Rx.CompositeSubscription.create(subscription1, subscription2)
-      compositeSubscription:unsubscribe()
-      expect(#unsubscribe1).to.equal(1)
-      expect(#unsubscribe2).to.equal(1)
+    describe('with subscriptions composed at initialization', function()
+      it('unsubscribes composed subscriptions', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
+
+        local compositeSubscription = Rx.CompositeSubscription.create(unpack(subscriptions))
+        compositeSubscription:unsubscribe()
+
+        expect(#spies[1]).to.equal(1)
+        expect(#spies[2]).to.equal(1)
+      end)
+
+      it('only invokes unsubscribe once', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
+
+        local compositeSubscription = Rx.CompositeSubscription.create(unpack(subscriptions))
+        compositeSubscription:unsubscribe()
+        compositeSubscription:unsubscribe()
+
+        expect(#spies[1]).to.equal(1)
+        expect(#spies[2]).to.equal(1)
+      end)
     end)
 
-    it('removes all subscriptions it was created with', function()
-      local subscription1, unsubscribe1 = subscriptionSpy()
-      local subscription2, unsubscribe2 = subscriptionSpy()
-      local compositeSubscription = Rx.CompositeSubscription.create(subscription1, subscription2)
-      compositeSubscription:unsubscribe()
-      compositeSubscription:unsubscribe()
-      expect(#unsubscribe1).to.equal(1)
-      expect(#unsubscribe2).to.equal(1)
-    end)
+    describe('with subscriptions composed dynamically', function()
+      it('unsubscribes composed subscriptions', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
 
-    it('unsubscribes all subscriptions that were added to it', function()
-      local subscription1, unsubscribe1 = subscriptionSpy()
-      local subscription2, unsubscribe2 = subscriptionSpy()
-      local compositeSubscription = Rx.CompositeSubscription.create()
-      compositeSubscription:add(subscription1, subscription2)
-      compositeSubscription:unsubscribe()
-      expect(#unsubscribe1).to.equal(1)
-      expect(#unsubscribe2).to.equal(1)
-    end)
+        local compositeSubscription = Rx.CompositeSubscription.create()
+        compositeSubscription:add(unpack(subscriptions))
+        compositeSubscription:unsubscribe()
 
-    it('removes all subscriptions that were added to it', function()
-      local subscription1, unsubscribe1 = subscriptionSpy()
-      local subscription2, unsubscribe2 = subscriptionSpy()
-      local compositeSubscription = Rx.CompositeSubscription.create()
-      compositeSubscription:add(subscription1, subscription2)
-      compositeSubscription:unsubscribe()
-      compositeSubscription:unsubscribe()
-      expect(#unsubscribe1).to.equal(1)
-      expect(#unsubscribe2).to.equal(1)
+        expect(#spies[1]).to.equal(1)
+        expect(#spies[2]).to.equal(1)
+      end)
+
+      it('only invokes unsubscribe once', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
+
+        local compositeSubscription = Rx.CompositeSubscription.create()
+        compositeSubscription:add(unpack(subscriptions))
+        compositeSubscription:unsubscribe()
+        compositeSubscription:unsubscribe()
+
+        expect(#spies[1]).to.equal(1)
+        expect(#spies[2]).to.equal(1)
+      end)
     end)
   end)
 
-  it('can be reused after it has been unsubscribed', function()
-    local compositeSubscription = Rx.CompositeSubscription.create()
+  describe('add', function()
+    it('does not unsubscribe composed subscriptions', function()
+      local subscriptions = {
+        Rx.Subscription.create(function() end),
+        Rx.Subscription.create(function() end),
+      }
+      local spies = {
+        spy(subscriptions[1], 'unsubscribe'),
+        spy(subscriptions[2], 'unsubscribe'),
+      }
 
-    local subscription1 = subscriptionSpy()
-    compositeSubscription:add(subscription1)
-    compositeSubscription:unsubscribe()
+      local compositeSubscription = Rx.CompositeSubscription.create()
+      compositeSubscription:add(unpack(subscriptions))
 
-    local subscription2, unsubscribe2 = subscriptionSpy()
-    compositeSubscription:add(subscription2)
-    compositeSubscription:unsubscribe()
+      expect(#spies[1]).to.equal(0)
+      expect(#spies[2]).to.equal(0)
+    end)
 
-    expect(#unsubscribe2).to.equal(1)
+    describe('if CompositeSubscription is already unsubscribed', function()
+      it('immediately unsubscribes subscriptions', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
+
+        local compositeSubscription = Rx.CompositeSubscription.create()
+        compositeSubscription:unsubscribe()
+
+        compositeSubscription:add(unpack(subscriptions))
+
+        expect(#spies[1]).to.equal(1)
+        expect(#spies[2]).to.equal(1)
+      end)
+    end)
+
+    describe('if CompositeSubscription was cleared', function()
+      it('does not unsubscribe composed subscriptions', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
+
+        local compositeSubscription = Rx.CompositeSubscription.create(
+            Rx.Subscription.create(function() end))
+        compositeSubscription:clear()
+
+        compositeSubscription:add(unpack(subscriptions))
+
+        expect(#spies[1]).to.equal(0)
+        expect(#spies[2]).to.equal(0)
+      end)
+    end)
+  end)
+
+  describe('clear', function()
+    it('unsubscribes composed subscriptions', function()
+        local subscriptions = {
+          Rx.Subscription.create(function() end),
+          Rx.Subscription.create(function() end),
+        }
+        local spies = {
+          spy(subscriptions[1], 'unsubscribe'),
+          spy(subscriptions[2], 'unsubscribe'),
+        }
+
+        local compositeSubscription = Rx.CompositeSubscription.create(unpack(subscriptions))
+        compositeSubscription:clear()
+
+        expect(#spies[1]).to.equal(1)
+        expect(#spies[2]).to.equal(1)
+    end)
   end)
 end)

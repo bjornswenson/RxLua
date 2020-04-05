@@ -20,6 +20,19 @@ function CompositeSubscription.create(...)
   return setmetatable(self, CompositeSubscription)
 end
 
+--- Unsubscribes all subscriptions that were added to this CompositeSubscription and removes them
+-- from this CompositeSubscription.
+-- @returns {nil}
+function CompositeSubscription:unsubscribe()
+  if not self.unsubscribed then
+    self.unsubscribed = true
+    for _,subscription in ipairs(self.subscriptions) do
+      subscription:unsubscribe()
+    end
+    self.subscriptions = {}
+  end
+end
+
 --- Adds one or more Subscriptions to this CompositeSubscription. If this subscription has already
 -- unsubscribed, then any added subscriptions will be immediately disposed.
 -- @arg {Subscription...} subscriptions - The list of Subscriptions to add.
@@ -40,19 +53,6 @@ end
 function CompositeSubscription:clear()
   for _,subscription in ipairs(self.subscriptions) do
     subscription:unsubscribe()
-    self.subscriptions = {}
-  end
-end
-
---- Unsubscribes all subscriptions that were added to this CompositeSubscription and removes them
--- from this CompositeSubscription.
--- @returns {nil}
-function CompositeSubscription:unsubscribe()
-  if not self.unsubscribed then
-    self.unsubscribed = true
-    for _,subscription in ipairs(self.subscriptions) do
-      subscription:unsubscribe()
-    end
     self.subscriptions = {}
   end
 end
