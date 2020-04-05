@@ -64,6 +64,7 @@ local files = {
   'src/schedulers/cooperativescheduler.lua',
   'src/schedulers/timeoutscheduler.lua',
   'src/subjects/subject.lua',
+  'src/subjects/operators/serialize.lua',
   'src/subjects/asyncsubject.lua',
   'src/subjects/behaviorsubject.lua',
   'src/subjects/replaysubject.lua',

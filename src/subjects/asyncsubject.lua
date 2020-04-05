@@ -79,6 +79,8 @@ function AsyncSubject:onError(message)
       self.observers[i]:onError(self.errorMessage)
     end
 
+    self.observers = {}
+
     self.stopped = true
   end
 end
@@ -93,6 +95,8 @@ function AsyncSubject:onCompleted()
 
       self.observers[i]:onCompleted()
     end
+
+    self.observers = {}
 
     self.stopped = true
   end

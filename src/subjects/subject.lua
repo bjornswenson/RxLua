@@ -91,6 +91,8 @@ function Subject:onCompleted()
     for i = #self.observers, 1, -1 do
       self.observers[i]:onCompleted()
     end
+
+    self.observers = {}
   end
 end
 

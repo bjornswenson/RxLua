@@ -195,4 +195,6 @@ describe('Subject', function()
       end)
     end)
   end)
+
+  dofile('tests/serialize.lua')
 end)

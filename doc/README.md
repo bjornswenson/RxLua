@@ -94,6 +94,7 @@ RxLua
   - [onNext](#onnextvalues)
   - [onError](#onerrormessage)
   - [onCompleted](#oncompleted)
+  - [serialize](#serialize)
 - [AsyncSubject](#asyncsubject)
   - [create](#create)
   - [subscribe](#subscribeonnext-onerror-oncompleted)
@@ -920,6 +921,12 @@ Signal to all Observers that an error has occurred.
 #### `:onCompleted()`
 
 Signal to all Observers that the Subject will not produce any more values.
+
+---
+
+#### `:serialize()`
+
+Returns a new Subject that serializes incoming events and processes them in the order received. This is useful for subjects whose subscriptions self-destruct under certain conditions, as is the case with a `takeUntil` or `takeWhile` operator.
 
 # AsyncSubject
 
