@@ -1,9 +1,10 @@
+local Subscription = require 'subscription'
 local util = require 'util'
 
 --- @class CompositeSubscription
 -- @description A Subscription that is composed of other subscriptions and can be used to
 -- unsubscribe multiple subscriptions at once.
-local CompositeSubscription = {}
+local CompositeSubscription = setmetatable({}, Subscription)
 CompositeSubscription.__index = CompositeSubscription
 CompositeSubscription.__tostring = util.constant('CompositeSubscription')
 
@@ -13,17 +14,33 @@ CompositeSubscription.__tostring = util.constant('CompositeSubscription')
 function CompositeSubscription.create(...)
   local self = {
     subscriptions = {...},
+    unsubscribed = false,
   }
 
   return setmetatable(self, CompositeSubscription)
 end
 
---- Adds one or more Subscriptions to this CompositeSubscription.
+--- Adds one or more Subscriptions to this CompositeSubscription. If this subscription has already
+-- unsubscribed, then any added subscriptions will be immediately disposed.
 -- @arg {Subscription...} subscriptions - The list of Subscriptions to add.
 -- @returns {nil}
 function CompositeSubscription:add(...)
   for _,subscription in ipairs({...}) do
-    table.insert(self.subscriptions, subscription)
+    if not self.unsubscribed then
+      table.insert(self.subscriptions, subscription)
+    else
+      subscription:unsubscribe()
+    end
+  end
+end
+
+--- Removes all subscriptions from this CompositeSubscription and calls `Subscription:unsubscribe()`
+-- on each one. More subscriptions can be added to this CompositeSubscription in the future.
+-- @returns {nil}
+function CompositeSubscription:clear()
+  for _,subscription in ipairs(self.subscriptions) do
+    subscription:unsubscribe()
+    self.subscriptions = {}
   end
 end
 
@@ -31,8 +48,11 @@ end
 -- from this CompositeSubscription.
 -- @returns {nil}
 function CompositeSubscription:unsubscribe()
-  for _,subscription in ipairs(self.subscriptions) do
-    subscription:unsubscribe()
+  if not self.unsubscribed then
+    self.unsubscribed = true
+    for _,subscription in ipairs(self.subscriptions) do
+      subscription:unsubscribe()
+    end
+    self.subscriptions = {}
   end
-  self.subscriptions = {}
 end
