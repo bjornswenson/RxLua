@@ -4,7 +4,7 @@ describe('serialize', function()
     expect(subject).to.be.an(Rx.Subject)
   end)
 
-  it('emits in order', function()
+  it('pushes values to observers in order', function()
     local subject = Rx.Subject.create():serialize()
 
     local function createReentrantObserver(trigger)
@@ -35,6 +35,74 @@ describe('serialize', function()
     expect(spies[2]).to.equal({{1}, {2}, {3}, {4}, {5}})
   end)
 
+  it('pushes errors to observers in order', function()
+    local subject = Rx.Subject.create():serialize()
+
+    local function createNaughtyObserver()
+      return Rx.Observer.create(nil, function()
+        subject:onNext('test value')
+      end, nil)
+    end
+
+    local observers = {
+      createNaughtyObserver(),
+      createNaughtyObserver(),
+    }
+    local spies = {
+      onNext = {
+        spy(observers[1], '_onNext'),
+        spy(observers[2], '_onNext'),
+      },
+      onError = {
+        spy(observers[1], '_onError'),
+        spy(observers[2], '_onError'),
+      },
+    }
+    subject:subscribe(observers[1])
+    subject:subscribe(observers[2])
+
+    subject:onError('ohno')
+
+    expect(#spies.onNext[1]).to.equal(0)
+    expect(#spies.onNext[2]).to.equal(0)
+    expect(spies.onError[1]).to.equal({{'ohno'}})
+    expect(spies.onError[2]).to.equal({{'ohno'}})
+  end)
+
+  it('notifies observers of completion in order', function()
+    local subject = Rx.Subject.create():serialize()
+
+    local function createNaughtyObserver()
+      return Rx.Observer.create(nil, nil, function()
+        subject:onNext('test value')
+      end)
+    end
+
+    local observers = {
+      createNaughtyObserver(),
+      createNaughtyObserver(),
+    }
+    local spies = {
+      onNext = {
+        spy(observers[1], '_onNext'),
+        spy(observers[2], '_onNext'),
+      },
+      onCompleted = {
+        spy(observers[1], '_onCompleted'),
+        spy(observers[2], '_onCompleted'),
+      },
+    }
+    subject:subscribe(observers[1])
+    subject:subscribe(observers[2])
+
+    subject:onCompleted()
+
+    expect(#spies.onNext[1]).to.equal(0)
+    expect(#spies.onNext[2]).to.equal(0)
+    expect(#spies.onCompleted[1]).to.equal(1)
+    expect(#spies.onCompleted[2]).to.equal(1)
+  end)
+
   it('processes subscriptions in order', function()
     local subject = Rx.Subject.create():serialize()
     local spies = {}
@@ -63,11 +131,11 @@ describe('serialize', function()
     local subscriptions = {}
 
     local function createDestructiveObserver()
-      return Rx.Observer.create(nil, function()
+      return Rx.Observer.create(function()
         for _,subscription in ipairs(subscriptions) do
           subscription:unsubscribe()
         end
-      end, nil)
+      end, nil, nil)
     end
 
     local observers = {

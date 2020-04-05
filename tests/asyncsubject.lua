@@ -57,6 +57,19 @@ describe('AsyncSubject', function()
       it('returns a subscription', function()
         expect(Rx.AsyncSubject.create():subscribe()).to.be.an(Rx.Subscription)
       end)
+
+      describe('the returned subscription', function()
+        it('does not push values to the observer when unsubscribed', function()
+          local subject = Rx.AsyncSubject.create()
+          local onNextSpy = spy(function() end)
+          local subscription = subject:subscribe(onNextSpy)
+
+          subscription:unsubscribe()
+
+          subject:onNext('any value')
+          expect(#onNextSpy).to.be(0)
+        end)
+      end)
     end)
   end)
 
