@@ -9,6 +9,7 @@ function Observable:takeWhile(predicate)
 
   return Observable.create(function(observer)
     local taking = true
+    local subscription
 
     local function onNext(...)
       if taking then
@@ -19,6 +20,7 @@ function Observable:takeWhile(predicate)
         if taking then
           return observer:onNext(...)
         else
+          if subscription then subscription:unsubscribe() end
           return observer:onCompleted()
         end
       end
@@ -32,6 +34,7 @@ function Observable:takeWhile(predicate)
       return observer:onCompleted()
     end
 
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return subscription
   end)
 end

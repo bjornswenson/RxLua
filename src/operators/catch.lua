@@ -18,6 +18,7 @@ function Observable:catch(handler)
 
     local function onError(e)
       if not handler then
+        if subscription then subscription:unsubscribe() end
         return observer:onCompleted()
       end
 

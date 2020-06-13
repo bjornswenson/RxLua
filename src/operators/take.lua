@@ -7,6 +7,7 @@ function Observable:take(n)
   n = n or 1
 
   return Observable.create(function(observer)
+    local subscription
     if n <= 0 then
       observer:onCompleted()
       return
@@ -20,6 +21,7 @@ function Observable:take(n)
       i = i + 1
 
       if i > n then
+        if subscription then subscription:unsubscribe() end
         observer:onCompleted()
       end
     end
@@ -32,6 +34,7 @@ function Observable:take(n)
       return observer:onCompleted()
     end
 
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return subscription
   end)
 end

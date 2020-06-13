@@ -7,10 +7,12 @@ function Observable:all(predicate)
   predicate = predicate or util.identity
 
   return Observable.create(function(observer)
+    local subscription
     local function onNext(...)
       util.tryWithObserver(observer, function(...)
         if not predicate(...) then
           observer:onNext(false)
+          if subscription then subscription:unsubscribe() end
           observer:onCompleted()
         end
       end, ...)
@@ -25,6 +27,7 @@ function Observable:all(predicate)
       return observer:onCompleted()
     end
 
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return subscription
   end)
 end

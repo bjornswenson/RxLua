@@ -5,6 +5,7 @@ local Observable = require 'observable'
 -- @returns {Observable}
 function Observable:takeUntil(other)
   return Observable.create(function(observer)
+    local subscription
     local function onNext(...)
       return observer:onNext(...)
     end
@@ -14,11 +15,13 @@ function Observable:takeUntil(other)
     end
 
     local function onCompleted()
+      if subscription then subscription:unsubscribe() end
       return observer:onCompleted()
     end
 
     other:subscribe(onCompleted, onCompleted, onCompleted)
 
-    return self:subscribe(onNext, onError, onCompleted)
+    subscription = self:subscribe(onNext, onError, onCompleted)
+    return subscription
   end)
 end
