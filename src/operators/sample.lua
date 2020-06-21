@@ -1,4 +1,5 @@
 local Observable = require 'observable'
+local Subscription = require 'subscription'
 local util = require 'util'
 
 --- Returns a new Observable that produces its most recent value every time the specified observable

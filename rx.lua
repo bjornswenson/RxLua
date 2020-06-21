@@ -5,7 +5,7 @@
 local util = {}
 
 util.pack = table.pack or function(...) return { n = select('#', ...), ... } end
-util.unpack = table.unpack or unpack
+util.unpack = table.unpack or _G.unpack
 util.eq = function(x, y) return x == y end
 util.noop = function() end
 util.identity = function(x) return x end
@@ -133,7 +133,7 @@ end
 
 --- Returns an Observable that never produces values and never completes.
 function Observable.never()
-  return Observable.create(function(observer) end)
+  return Observable.create(function() end)
 end
 
 --- Returns an Observable that immediately produces an error.
@@ -657,8 +657,6 @@ function Observable:debounce(time, scheduler)
 
     local function wrap(key)
       return function(...)
-        local value = util.pack(...)
-
         if debounced[key] then
           debounced[key]:unsubscribe()
         end
@@ -1829,6 +1827,7 @@ function Observable.zip(...)
         table.insert(values[i], value)
         values[i].n = values[i].n + 1
 
+        -- luacheck: ignore i
         local ready = true
         for i = 1, count do
           if values[i].n == 0 then
@@ -1890,6 +1889,7 @@ end
 --- Schedules a function to be run on the scheduler. It is executed immediately.
 -- @arg {function} action - The function to execute.
 function ImmediateScheduler:schedule(action)
+  local _ = self
   action()
 end
 
@@ -1993,8 +1993,8 @@ end
 -- @arg {number=0} delay - The delay, in milliseconds.
 -- @returns {Subscription}
 function TimeoutScheduler:schedule(action, delay, ...)
+  local _ = self
   local timer = require 'timer'
-  local subscription
   local handle = timer.setTimeout(delay, action, ...)
   return Subscription.create(function()
     timer.clearTimeout(handle)

@@ -136,6 +136,6 @@ end
 local file = io.open(destination, 'w')
 
 if file then
-  file:write(table.concat(components, ''))
+  file:write(table.concat(components, ''), "\n")
   file:close()
 end

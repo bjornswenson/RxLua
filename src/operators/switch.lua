@@ -1,4 +1,5 @@
 local Observable = require 'observable'
+local Subscription = require 'subscription'
 
 --- Given an Observable that produces Observables, returns an Observable that produces the values
 -- produced by the most recently produced Observable.

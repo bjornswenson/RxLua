@@ -1,4 +1,5 @@
 local Observable = require 'observable'
+local Subscription = require 'subscription'
 local util = require 'util'
 
 --- Returns an Observable that merges the values produced by the source Observables by grouping them
@@ -26,6 +27,7 @@ function Observable.zip(...)
         table.insert(values[i], value)
         values[i].n = values[i].n + 1
 
+        -- luacheck: ignore i
         local ready = true
         for i = 1, count do
           if values[i].n == 0 then

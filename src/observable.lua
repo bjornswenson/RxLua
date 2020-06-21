@@ -1,3 +1,4 @@
+local Observer = require 'observer'
 local util = require 'util'
 
 --- @class Observable
@@ -38,7 +39,7 @@ end
 
 --- Returns an Observable that never produces values and never completes.
 function Observable.never()
-  return Observable.create(function(observer) end)
+  return Observable.create(function() end)
 end
 
 --- Returns an Observable that immediately produces an error.

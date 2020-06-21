@@ -15,6 +15,7 @@ end
 --- Schedules a function to be run on the scheduler. It is executed immediately.
 -- @arg {function} action - The function to execute.
 function ImmediateScheduler:schedule(action)
+  local _ = self
   action()
 end
 

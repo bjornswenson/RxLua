@@ -1,4 +1,5 @@
 local Observable = require 'observable'
+local Subscription = require 'subscription'
 local util = require 'util'
 
 --- Returns an Observable that produces values from the original along with the most recently

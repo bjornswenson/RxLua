@@ -1,4 +1,5 @@
 local Observable = require 'observable'
+local Subscription = require 'subscription'
 
 --- Returns a new Observable that produces the values produced by all the specified Observables in
 -- the order they are produced.

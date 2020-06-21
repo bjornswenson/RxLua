@@ -1,4 +1,5 @@
 local Observable = require 'observable'
+local Subscription = require 'subscription'
 local util = require 'util'
 
 --- Returns a new Observable that runs a combinator function on the most recent values from a set

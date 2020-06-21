@@ -16,8 +16,6 @@ function Observable:debounce(time, scheduler)
 
     local function wrap(key)
       return function(...)
-        local value = util.pack(...)
-
         if debounced[key] then
           debounced[key]:unsubscribe()
         end

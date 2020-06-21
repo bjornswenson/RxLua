@@ -1,7 +1,7 @@
 local util = {}
 
 util.pack = table.pack or function(...) return { n = select('#', ...), ... } end
-util.unpack = table.unpack or unpack
+util.unpack = table.unpack or _G.unpack
 util.eq = function(x, y) return x == y end
 util.noop = function() end
 util.identity = function(x) return x end
